@@ -19,11 +19,11 @@ Aplikasi latihan CBT Bahasa Indonesia untuk siswa SMP/MTs. Materi disusun hanya 
 
 ## Fitur
 
-- Dua tingkat latihan pada halaman yang sama: Level 1 berisi 30 soal; Level 2 berisi 30 soal berbasis konteks literasi yang lebih panjang dan penyuntingan kontekstual. Masing-masing level memiliki timer, sesi tersimpan, skor, analisis, dan ulasan tersendiri.
-- Distribusi Level 1: 7 ejaan, 7 tata kalimat, 8 tanda baca, dan 8 kata baku/tidak baku. Distribusi Level 2: 8 ejaan, 7 tata kalimat, 8 tanda baca, dan 7 kata baku/tidak baku.
+- Tiga tingkat latihan pada halaman yang sama: Level 1 dan Level 2 masing-masing berisi 30 soal; Level 3 menambahkan 30 soal analitis berbasis konteks. Masing-masing level memiliki timer, sesi tersimpan, skor, analisis, dan ulasan tersendiri. Penamaan level serta durasi merupakan pengaturan latihan, bukan ketentuan Juknis.
+- Distribusi Level 1: 7 ejaan, 7 tata kalimat, 8 tanda baca, dan 8 kata baku/tidak baku. Distribusi Level 2 dan Level 3: masing-masing 8 ejaan, 7 tata kalimat, 8 tanda baca, dan 7 kata baku/tidak baku.
 - Ilustrasi papan pengumuman hasil generate AI tersedia lokal dan dipakai pada soal visual. Teks pengumuman ditumpangkan sebagai HTML agar ejaan pada stimulus tetap akurat; tidak ada layanan gambar eksternal.
 - Lambang SMP Negeri 2 Kalibaru pada halaman awal, dengan ukuran responsif dan teks alternatif; aset berada di `assets/` untuk HTML mandiri serta `public/assets/` untuk Vercel.
-- Timer simulasi 45 menit (Level 1) dan 60 menit (Level 2), navigasi nomor, serta simpan otomatis jawaban dan waktu per level di `localStorage`.
+- Timer simulasi 45 menit (Level 1) dan 60 menit (Level 2 dan 3), navigasi nomor, serta simpan otomatis jawaban dan waktu per level di `localStorage`.
 - Skor, jumlah terjawab/tepat/perlu ditinjau, peta penguasaan empat kategori, kesimpulan latihan, rekomendasi belajar per kategori, dan ulasan setiap soal yang menampilkan pilihan peserta, kunci, serta alasan.
 - Layout responsif untuk ponsel dan desktop.
 
