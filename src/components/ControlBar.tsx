@@ -121,7 +121,7 @@ export const ControlBar: React.FC<ControlBarProps> = ({
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              Teks 60%
+              Kokpit 60%
             </button>
           </div>
         </div>

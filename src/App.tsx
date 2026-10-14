@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CameraPanel } from './components/CameraPanel';
-import { TeleprompterPanel } from './components/TeleprompterPanel';
+import { PerformanceCockpitPanel } from './components/PerformanceCockpitPanel';
 import { ControlBar, IfpLayoutMode } from './components/ControlBar';
 import { EvaluationModal } from './components/EvaluationModal';
 import { PoemSelectorModal } from './components/PoemSelectorModal';
@@ -71,7 +71,7 @@ export default function App() {
   // Refs
   const timerIntervalRef = useRef<number | null>(null);
   const videoElementRef = useRef<HTMLVideoElement | null>(null);
-  const lastSnapshotProgressRef = useRef<number>(0);
+  const lastSnapshotDurationRef = useRef<number>(0);
 
   // Audio Recorder Hook
   const recorder = usePerformanceRecorder();
@@ -96,16 +96,16 @@ export default function App() {
     };
   }, [isPracticing, isPaused]);
 
-  // Periodic visual snapshot capture during recitation (at ~20%, ~45%, ~70%, ~90% progress)
+  // Periodic visual snapshot capture during recitation (every ~20-25 seconds of recitation)
   useEffect(() => {
     if (!isPracticing || isPaused) return;
 
-    const diff = Math.abs(progressPercent - lastSnapshotProgressRef.current);
+    const diff = practiceDuration - lastSnapshotDurationRef.current;
     if (diff >= 22 && videoElementRef.current) {
-      lastSnapshotProgressRef.current = progressPercent;
+      lastSnapshotDurationRef.current = practiceDuration;
       recorder.captureSnapshot(videoElementRef.current);
     }
-  }, [progressPercent, isPracticing, isPaused, recorder]);
+  }, [practiceDuration, isPracticing, isPaused, recorder]);
 
   // Countdown timer handler (3, 2, 1 -> Start Practice & Audio Capture)
   useEffect(() => {
@@ -123,7 +123,7 @@ export default function App() {
       setCountdown(null);
       setIsPracticing(true);
       setIsPaused(false);
-      lastSnapshotProgressRef.current = 0;
+      lastSnapshotDurationRef.current = 0;
 
       // Start audio recording
       recorder.startRecording().then(() => {
@@ -170,6 +170,7 @@ export default function App() {
     setCountdown(3);
     setPracticeDuration(0);
     setProgressPercent(0);
+    lastSnapshotDurationRef.current = 0;
     recorder.resetRecording();
     if (currentPoem.stanzas[0]?.lines[0]) {
       setActiveLineId(currentPoem.stanzas[0].lines[0].id);
@@ -190,6 +191,7 @@ export default function App() {
     setCountdown(null);
     setPracticeDuration(0);
     setProgressPercent(0);
+    lastSnapshotDurationRef.current = 0;
     recorder.resetRecording();
     if (currentPoem.stanzas[0]?.lines[0]) {
       setActiveLineId(currentPoem.stanzas[0].lines[0].id);
@@ -474,11 +476,13 @@ export default function App() {
         <div className="flex items-center gap-2 sm:gap-3 overflow-hidden text-ellipsis whitespace-nowrap">
           <span className="text-amber-400 font-semibold flex items-center gap-1 text-[11px] sm:text-xs">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Naskah Aktif:</span>
+            <span>Naskah Acuan AI:</span>
           </span>
           <span className="text-white font-medium text-[11px] sm:text-xs">{currentPoem.title}</span>
           <span className="text-slate-600 hidden sm:inline">·</span>
           <span className="hidden sm:inline text-[11px] text-slate-300">Penyair: {currentPoem.poet}</span>
+          <span className="text-slate-600 hidden md:inline">·</span>
+          <span className="text-amber-300/90 hidden md:inline text-[11px]">Format: Teks Fisik Mandiri</span>
         </div>
 
         <div className="flex items-center gap-3 shrink-0 font-mono text-[10px] sm:text-[11px]">
@@ -527,7 +531,7 @@ export default function App() {
           />
         </section>
 
-        {/* PANEL KANAN: TELEPROMPTER TEKS PUISI BESAR */}
+        {/* PANEL KANAN: KOKPIT PENAMPILAN & ANALISIS SUARA REAL-TIME (PENDEKATAN A) */}
         <section
           className={`h-full min-h-0 flex flex-col overflow-hidden ${
             layoutMode === 'balanced'
@@ -537,36 +541,20 @@ export default function App() {
               : 'lg:col-span-7 xl:col-span-8'
           }`}
         >
-          <TeleprompterPanel
+          <PerformanceCockpitPanel
             poem={currentPoem}
-            fontSize={fontSize}
-            scrollSpeed={scrollSpeed}
             isPracticing={isPracticing}
             isPaused={isPaused}
-            progressPercent={progressPercent}
-            activeLineId={activeLineId}
-            showProsodyMarks={showProsodyMarks}
-            showEmphasis={showEmphasis}
-            showExpressionGuide={showExpressionGuide}
-            showLegend={showLegend}
-            onFontSizeChange={setFontSize}
-            onScrollSpeedChange={setScrollSpeed}
-            onToggleProsodyMarks={() => setShowProsodyMarks(!showProsodyMarks)}
-            onToggleEmphasis={() => setShowEmphasis(!showEmphasis)}
-            onToggleExpressionGuide={() => setShowExpressionGuide(!showExpressionGuide)}
-            onToggleLegend={() => setShowLegend(!showLegend)}
-            onLineClick={(lineId) => setActiveLineId(lineId)}
-            onProgressUpdate={handleProgressUpdate}
-            onTogglePlayPause={() => {
-              if (!isPracticing) {
-                handleStart();
-              } else if (isPaused) {
-                handleResume();
-              } else {
-                handlePause();
-              }
-            }}
-            onRestartPractice={handleRestart}
+            practiceDuration={practiceDuration}
+            micLevel={recorder.micLevel}
+            isRecordingAudio={recorder.isRecording}
+            onStart={handleStart}
+            onPause={handlePause}
+            onResume={handleResume}
+            onRestart={handleRestart}
+            onFinish={handleFinish}
+            onOpenRubricModal={() => setIsEvaluationOpen(true)}
+            onOpenGuideModal={() => setIsGuideOpen(true)}
           />
         </section>
 
@@ -575,13 +563,13 @@ export default function App() {
           <div className="absolute inset-0 bg-black/85 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 text-center">
             <div className="space-y-4 animate-in fade-in zoom-in duration-300">
               <span className="text-xs uppercase tracking-widest text-amber-400 font-mono font-bold block">
-                SIAP DI PANGGUNG IFP
+                SIAP DI PANGGUNG DEKLAMASI
               </span>
               <div className="text-7xl sm:text-8xl md:text-9xl font-black font-display text-white drop-shadow-[0_0_40px_rgba(245,158,11,0.6)]">
                 {countdown === 0 ? 'MULAI!' : countdown}
               </div>
               <p className="text-xs sm:text-sm md:text-base text-slate-300 max-w-md mx-auto">
-                Tegakkan punggung, tatap ke depan, dan hembuskan napas rileks. Mikrofon dan teleprompter akan mulai bergulir otomatis.
+                Pegang naskah setinggi dada di bawah dagu, tatap ke depan dengan percaya diri, dan hembuskan napas rileks. Perekam audio dan evaluasi AI akan aktif.
               </p>
             </div>
           </div>

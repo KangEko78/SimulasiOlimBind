@@ -41,10 +41,10 @@ export const GuideModal: React.FC<GuideModalProps> = ({ isOpen, onClose }) => {
           <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
             <div className="flex items-center gap-2 text-amber-300 font-bold text-sm font-display">
               <Eye className="w-4 h-4 text-amber-400" />
-              <span>1. Teknik Tatapan Mata di Panggung IFP</span>
+              <span>1. Posisi Naskah Fisik & Tatapan Mata di Panggung</span>
             </div>
             <p>
-              Jangan terpaku hanya menatap teks di teleprompter. Gunakan <strong>Garis Tatapan Mata (Eye-Line)</strong> di panel kiri kamera untuk sesekali menyapu pandangan ke arah audiens/juri kelas. Bacalah satu frasa dengan cepat, lalu angkat pandangan saat melafalkan kata-kata kunci berbobot.
+              Pegang map/kertas naskah setinggi dada (sekitar 20 cm di bawah dagu) agar tidak menutupi gerakan bibir atau mikrofon IFP. Jangan menunduk terus-menerus ke kertas. Hafalkan frasa pembuka, lalu angkat tatapan mata ke arah kamera/penonton terutama saat jeda bait (///) dan kata-kata bermakna kunci.
             </p>
           </div>
 
